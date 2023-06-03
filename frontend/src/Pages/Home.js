@@ -19,14 +19,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState({});
   const [searchText,setSearchText] = useState("");
-  const [searchResults,setSearchResults] = useState(null);
+  const [searchResults,setSearchResults] = useState({});
   const [searchTimeOut,setSearchTimeOut] = useState(null);
 
   const handleSearchChange=(e)=>{
+    clearTimeout(searchTimeOut);
     setSearchText(e.target.value);
     setSearchTimeOut(()=>{
       setTimeout(()=>{
-        const results = allPosts.filter((item)=>{item.name.toLowerCase().includes(searchText.toLowerCase()) || 
+        const results = allPosts.filter((item)=>{return item.name.toLowerCase().includes(searchText.toLowerCase()) || 
           item.prompt.toLowerCase().includes(searchText.toLowerCase()) })
           setSearchResults(results);
       },500)
@@ -72,7 +73,12 @@ export default function Home() {
       </div>
       <div className='mt-16'>
         <FormField 
-        labelName='Search Posts'/>
+        labelName='Search Posts' 
+        type="text"
+        name="text"
+        placeholder="search posts"
+        value={searchText}
+        handleChange={handleSearchChange}/>
       </div>
       <div className='mt-10'>
         {loading ? 
@@ -84,7 +90,7 @@ export default function Home() {
         )}
         <div className='grid lg:grid-col-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3'>
           {searchText ? 
-            <RenderCards data={[allPosts]} title='No Search Results Found'/> :
+            <RenderCards data={[searchResults]} title='No Search Results Found'/> :
             <RenderCards data={[allPosts]} title='No Posts found'/>
           }
         </div>
